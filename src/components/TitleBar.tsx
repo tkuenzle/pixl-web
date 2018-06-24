@@ -1,17 +1,20 @@
-import { AppBar, Toolbar, Typography } from '@material-ui/core';
 import * as React from 'react';
 
-interface ITitleBarProps {
+import { AppBar, Toolbar, Typography } from '@material-ui/core';
+
+interface TitleBarProps {
   title: string;
 }
 
-class TitleBar extends React.PureComponent<ITitleBarProps> {
+class TitleBar extends React.PureComponent<TitleBarProps> {
   public render() {
     const { title } = this.props;
     return (
       <AppBar>
         <Toolbar>
-          <Typography>{title}</Typography>
+          <Typography variant="title" color="inherit">
+            {title}
+          </Typography>
         </Toolbar>
       </AppBar>
     );

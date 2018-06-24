@@ -1,9 +1,19 @@
 {
-  "extends": ["tslint:recommended", "tslint-react", "tslint-config-airbnb", "tslint-config-prettier"],
+  "extends": ["tslint:recommended", "tslint-react", "tslint-config-airbnb"],
   "linterOptions": {
-    "exclude": [
-      "config/**/*.js",
-      "node_modules/**/*.ts"
-    ]
+    "exclude": ["config/**/*.js", "node_modules/**/*.ts"]
+  },
+  "rules": {
+    "ordered-imports": [
+        true,
+        {
+          "grouped-imports": true
+        }
+      ],
+      "import-name": false,
+      "interface-name": [true, "never-prefix"],
+      "semicolon": [true, "always"],
+      "object-literal-sort-key": false,
+      "variable-name": false
   }
 }
