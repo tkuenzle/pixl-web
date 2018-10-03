@@ -2,6 +2,7 @@
   "name": "pixl-web",
   "version": "0.1.0",
   "private": true,
+  "homepage": "https://tkuenzle.github.com/pixl-web",
   "dependencies": {
     "@material-ui/core": "^3.0.3",
     "@material-ui/icons": "^3.0.1",
