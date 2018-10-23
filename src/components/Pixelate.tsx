@@ -4,13 +4,6 @@ import { Zip } from 'service/zip';
 
 import { ImageItemValues } from './ImageItem';
 
-function loadImage(image: HTMLImageElement): Promise<HTMLImageElement> {
-  return new Promise((resolve, reject) => {
-    image.onload = () => resolve(image);
-    image.onerror = (error: ErrorEvent) => reject(error);
-  });
-}
-
 function toBlob(canvas: HTMLCanvasElement): Promise<Blob | null> {
   return new Promise((resolve, reject) => {
     canvas.toBlob(result => resolve(result));
@@ -21,39 +14,42 @@ class Pixelate extends React.PureComponent<{}> {
   public canvas = React.createRef<HTMLCanvasElement>();
   private zip = new Zip();
 
-  public async pixelate(imageItem: ImageItemValues) {
+  public async pixelate(imageItem: ImageItemValues, increase: () => void) {
     if (!this.canvas.current) {
       throw new Error('No canvas available.');
     }
     const canvas = this.canvas.current;
     const context = this.canvas.current.getContext('2d');
-    const url = URL.createObjectURL(imageItem.image);
-    const img = new Image();
+    const img = imageItem.image.file;
+    const { crop } = imageItem.image;
 
-    img.src = url;
-    await loadImage(img);
-    const { width, height } = img;
-    const numberOfPixels = imageItem.minNumberOfPixels;
-    const numberOfImages = Math.log(height / numberOfPixels) / Math.log(2);
-    const aspectRatio = Math.floor(numberOfPixels * (width / height)) / numberOfPixels;
+    // const width = crop  && crop.width ? Math.floor(img.width * crop.width / 100) : img.width;
+    const height = crop  && crop.height ? Math.floor(img.height * crop.height / 100) : img.height;
+    const offX = crop && crop.x ? Math.floor(img.width * crop.x / 100) : 0;
+    const offY = crop && crop.y ? Math.floor(img.height * crop.y / 100) : 0;
+    const numberOfPixelsX = imageItem.minNumberOfPixelsX;
+    const numberOfPixelsY = imageItem.minNumberOfPixelsY;
+    const numberOfImages = Math.log(height / numberOfPixelsY) / Math.log(2);
+    const aspectRatio = numberOfPixelsX / numberOfPixelsY;
     const newWidth = Math.floor(aspectRatio * height);
     canvas.width = newWidth;
     canvas.height = height;
     const folder = this.zip.addFolder(imageItem.title);
     for (let i = 0; i < numberOfImages; i += 1) {
-      const nh = i !== numberOfImages - 1 ? numberOfPixels * 2 ** i : height;
+      const nh = i !== numberOfImages - 1 ? numberOfPixelsY * 2 ** i : height;
       const nw = aspectRatio * nh;
       if (context) {
         context.mozImageSmoothingEnabled = false;
         context.webkitImageSmoothingEnabled = false;
         context.imageSmoothingEnabled = false;
-        context.drawImage(img, 0, 0, nw, nh);
+        context.drawImage(img, offX, offY, newWidth, height, 0, 0, nw, nh);
         context.drawImage(canvas, 0, 0, nw, nh, 0, 0, newWidth, height);
         const blob = await toBlob(canvas);
         if (blob) {
           await folder.addFile({ name: `${imageItem.title}-${i}.jpg`, data: blob });
         }
       }
+      increase();
     }
   }
 

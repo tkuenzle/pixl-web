@@ -14,6 +14,8 @@
       "interface-name": [true, "never-prefix"],
       "semicolon": [true, "always"],
       "object-literal-sort-key": false,
-      "variable-name": false
+      "variable-name": false,
+      "no-this-assignment": [true, {"allow-destructuring": true}],
+      "align": [true, "parameters", "statements", "members"]
   }
 }

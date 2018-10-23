@@ -1,5 +1,3 @@
-import * as React from 'react';
-
 import {
   Card,
   CardActionArea,
@@ -12,8 +10,9 @@ import {
   withStyles,
 } from '@material-ui/core';
 import BorderAll from '@material-ui/icons/BorderAll';
-
 import GridItem from 'components/GridItem';
+import * as React from 'react';
+import { getImagePosition } from 'util/image';
 
 import { ImageItemValues } from '../ImageForm';
 
@@ -34,7 +33,8 @@ const styles = (theme: Theme) =>
       flexDirection: 'column',
     },
     media: {
-      height: 200,
+      height: 0,
+      paddingTop: '66.667%',
     },
     title: {
       paddingBottom: theme.spacing.unit * 2,
@@ -49,20 +49,31 @@ interface ImageViewProps extends WithStyles<typeof styles> {
 class ImageView extends React.PureComponent<ImageViewProps> {
   public render() {
     const { classes, onEdit, initialValues } = this.props;
-    const preview = initialValues.image && initialValues.image.preview;
+    const file = initialValues.image && initialValues.image.file;
+    const crop = initialValues.image && initialValues.image.crop;
+    const preview = file && file.src;
     return (
       <GridItem>
         <Card className={classes.container}>
           <CardActionArea className={classes.actionArea} onClick={onEdit}>
-            <CardMedia className={classes.media} image={preview} />
+            <CardMedia
+              className={classes.media}
+              style={getImagePosition(file, crop)}
+              image={preview}
+            />
             <CardContent>
               <div className={classes.title}>
                 <Typography variant="headline">{initialValues.title}</Typography>
               </div>
               <IconText
                 icon={BorderAll}
-                label="Number of pixels"
-                value={initialValues.minNumberOfPixels}
+                label="Number of pixels X"
+                value={initialValues.minNumberOfPixelsX}
+              />
+              <IconText
+                icon={BorderAll}
+                label="Number of pixels Y"
+                value={initialValues.minNumberOfPixelsY}
               />
             </CardContent>
           </CardActionArea>

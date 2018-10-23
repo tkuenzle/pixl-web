@@ -1,5 +1,14 @@
-import { MuiThemeProvider } from '@material-ui/core';
+import throttle from 'lodash/throttle';
 import * as React from 'react';
+
+import {
+  Dialog,
+  DialogContent,
+  DialogContentText,
+  DialogTitle,
+  LinearProgress,
+  MuiThemeProvider,
+} from '@material-ui/core';
 
 import {
   AddItem,
@@ -15,16 +24,21 @@ import theme from './theme';
 interface AppState {
   items: ImageItemValues[];
   editing: number | undefined | 'new';
+  progress: number;
+  running: boolean;
 }
 
 const newImageItem: Partial<ImageItemValues> = {
-  minNumberOfPixels: 4,
+  minNumberOfPixelsX: 4,
+  minNumberOfPixelsY: 4,
 };
 
 class App extends React.Component<{}, AppState> {
   public state: AppState = {
     editing: 'new',
     items: [],
+    progress: 0,
+    running: false,
   };
 
   private pixelate = React.createRef<Pixelate>();
@@ -70,12 +84,38 @@ class App extends React.Component<{}, AppState> {
   public run = async () => {
     const { items } = this.state;
     const { current } = this.pixelate;
+
     if (!current) {
       return;
     }
+
+    const numberOfImages = items.reduce((acc, i) => {
+      const img = i.image.file;
+      const { crop } = i.image;
+      const numberOfPixelsY = i.minNumberOfPixelsY;
+      const height =
+        crop && crop.height ? Math.floor((img.height * crop.height) / 100) : img.height;
+      const images = Math.ceil(Math.log(height / numberOfPixelsY) / Math.log(2));
+      const total = acc + images;
+      return total;
+    }, 0);
+    const step = 100 / numberOfImages;
+
+    const updateState = throttle(progress => this.setState({ progress }), 1000, {
+      leading: true,
+      trailing: false,
+    });
+    const counter = { clicks: 0 };
+    const increase = () => {
+      counter.clicks = counter.clicks + 1;
+      updateState(counter.clicks * step);
+    };
+
+    this.setState({ running: true, progress: 0 });
     for (const item of items) {
-      await current.pixelate(item);
+      await current.pixelate(item, increase);
     }
+    this.setState({ running: false });
     await current.download();
   }
 
@@ -85,6 +125,19 @@ class App extends React.Component<{}, AppState> {
       return <AddItem onClick={this.addItem} />;
     }
     return null;
+  }
+
+  public renderDialog() {
+    const { progress, running } = this.state;
+    return (
+      <Dialog open={running} fullWidth={true}>
+        <LinearProgress variant="determinate" value={progress} />
+        <DialogTitle>Just hang on a little</DialogTitle>
+        <DialogContent>
+          <DialogContentText>Your images are being prepared...</DialogContentText>
+        </DialogContent>
+      </Dialog>
+    );
   }
 
   public render() {
@@ -104,7 +157,7 @@ class App extends React.Component<{}, AppState> {
 
     const newItem = editing === 'new' && (
       <ImageItem
-        initialValues={newImageItem}
+        initialValues={{ ...newImageItem, title: `Image ${items.length + 1}` }}
         key="new"
         onCancel={this.handleCancel}
         onSave={this.handleSave('new')}
@@ -119,7 +172,7 @@ class App extends React.Component<{}, AppState> {
     return (
       <MuiThemeProvider theme={theme}>
         <div>
-          <TitleBar title="pixl" />;
+          <TitleBar title="Pixelate your images" />;
           <MainContainer>
             {mappedItems}
             {newItem}
@@ -128,6 +181,7 @@ class App extends React.Component<{}, AppState> {
           {fabButton}
           <Pixelate ref={this.pixelate} />
         </div>
+        {this.renderDialog()}
       </MuiThemeProvider>
     );
   }

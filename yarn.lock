@@ -105,6 +105,10 @@
   dependencies:
     "@types/node" "*"
 
+"@types/lodash@^4.14.118":
+  version "4.14.118"
+  resolved "https://registry.yarnpkg.com/@types/lodash/-/lodash-4.14.118.tgz#247bab39bfcc6d910d4927c6e06cbc70ec376f27"
+
 "@types/node@*", "@types/node@^10.9.4":
   version "10.9.4"
   resolved "https://registry.yarnpkg.com/@types/node/-/node-10.9.4.tgz#0f4cb2dc7c1de6096055357f70179043c33e9897"
@@ -125,6 +129,12 @@
 "@types/react-dropzone@^4.2.2":
   version "4.2.2"
   resolved "https://registry.yarnpkg.com/@types/react-dropzone/-/react-dropzone-4.2.2.tgz#af0a2595169700c8ab1114e9096285499beaff40"
+  dependencies:
+    "@types/react" "*"
+
+"@types/react-image-crop@^3.0.1":
+  version "3.0.1"
+  resolved "https://registry.yarnpkg.com/@types/react-image-crop/-/react-image-crop-3.0.1.tgz#b9377c469e5586f2253de51af8c999406a9a6da0"
   dependencies:
     "@types/react" "*"
 
@@ -4613,7 +4623,7 @@ lodash.uniq@^4.5.0:
   version "4.5.0"
   resolved "https://registry.yarnpkg.com/lodash.uniq/-/lodash.uniq-4.5.0.tgz#d0225373aeb652adc1bc82e4945339a842754773"
 
-"lodash@>=3.5 <5", lodash@^4.13.1, lodash@^4.17.10, lodash@^4.17.2, lodash@^4.17.3, lodash@^4.17.4, lodash@^4.3.0:
+"lodash@>=3.5 <5", lodash@^4.13.1, lodash@^4.17.10, lodash@^4.17.11, lodash@^4.17.2, lodash@^4.17.3, lodash@^4.17.4, lodash@^4.3.0:
   version "4.17.11"
   resolved "https://registry.yarnpkg.com/lodash/-/lodash-4.17.11.tgz#b39ea6229ef607ecd89e2c8df12536891cac9b8d"
 
@@ -6047,6 +6057,12 @@ react-event-listener@^0.6.2:
 react-final-form@^3.6.5:
   version "3.6.5"
   resolved "https://registry.yarnpkg.com/react-final-form/-/react-final-form-3.6.5.tgz#191324bc686b20e9e49c929a79949f34b38ba8e5"
+
+react-image-crop@^6.0.0:
+  version "6.0.0"
+  resolved "https://registry.yarnpkg.com/react-image-crop/-/react-image-crop-6.0.0.tgz#e5875c2a784e490c66bfb21b17c0c21f3823efcf"
+  dependencies:
+    "@types/react-image-crop" "^3.0.1"
 
 react-jss@^8.1.0:
   version "8.6.1"
