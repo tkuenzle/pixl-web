@@ -9,6 +9,7 @@ import {
   WithStyles,
 } from '@material-ui/core';
 import BorderAll from '@material-ui/icons/BorderAll';
+import Number from '@material-ui/icons/FilterNone';
 import Title from '@material-ui/icons/Title';
 import GridItem from 'components/GridItem';
 import * as React from 'react';
@@ -58,6 +59,7 @@ export interface ImageItemValues {
   title: string;
   minNumberOfPixelsX: number;
   minNumberOfPixelsY: number;
+  numberOfImages: number;
 }
 type ImageItemErrors = { [P in keyof ImageItemValues]?: string | object | null };
 
@@ -112,6 +114,13 @@ class ImageForm extends React.PureComponent<ImageFormProps> {
                   component={NumberField}
                 />
               </IconListItem>
+              <IconListItem icon={Number}>
+                <Field
+                  name="numberOfImages"
+                  label="Max number of Images"
+                  component={NumberField}
+                />
+              </IconListItem>
             </CardContent>
             <CardActions>
               <Button size="small" onClick={onCancel}>
@@ -148,12 +157,17 @@ class ImageForm extends React.PureComponent<ImageFormProps> {
     if (values.minNumberOfPixelsX == null) {
       errors.minNumberOfPixelsX = 'Please enter a valid number.';
     } else if (values.minNumberOfPixelsX < 1) {
-      errors.minNumberOfPixelsX = 'Please enter at least 0.';
+      errors.minNumberOfPixelsX = 'Please enter at least 1.';
     }
     if (values.minNumberOfPixelsY == null) {
       errors.minNumberOfPixelsY = 'Please enter a valid number.';
     } else if (values.minNumberOfPixelsY < 1) {
-      errors.minNumberOfPixelsY = 'Please enter at least 0.';
+      errors.minNumberOfPixelsY = 'Please enter at least 1.';
+    }
+    if (values.numberOfImages == null) {
+      errors.numberOfImages = 'Please enter a valid number.';
+    } else if (values.numberOfImages < 1) {
+      errors.numberOfImages = 'Please enter at least 1.';
     }
     if (values.title == null || values.title.length === 0) {
       errors.title = 'Please enter a name.';

@@ -10,6 +10,7 @@ import {
   withStyles,
 } from '@material-ui/core';
 import BorderAll from '@material-ui/icons/BorderAll';
+import Number from '@material-ui/icons/FilterNone';
 import GridItem from 'components/GridItem';
 import * as React from 'react';
 import { getImagePosition } from 'util/image';
@@ -74,6 +75,11 @@ class ImageView extends React.PureComponent<ImageViewProps> {
                 icon={BorderAll}
                 label="Number of pixels Y"
                 value={initialValues.minNumberOfPixelsY}
+              />
+              <IconText
+                icon={Number}
+                label="Number of images"
+                value={initialValues.numberOfImages}
               />
             </CardContent>
           </CardActionArea>

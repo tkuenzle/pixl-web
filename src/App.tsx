@@ -31,6 +31,7 @@ interface AppState {
 const newImageItem: Partial<ImageItemValues> = {
   minNumberOfPixelsX: 4,
   minNumberOfPixelsY: 4,
+  numberOfImages: 5,
 };
 
 class App extends React.Component<{}, AppState> {
@@ -95,7 +96,10 @@ class App extends React.Component<{}, AppState> {
       const numberOfPixelsY = i.minNumberOfPixelsY;
       const height =
         crop && crop.height ? Math.floor((img.height * crop.height) / 100) : img.height;
-      const images = Math.ceil(Math.log(height / numberOfPixelsY) / Math.log(2));
+      const images = Math.min(
+        Math.ceil(Math.log(height / numberOfPixelsY) / Math.log(2)),
+        i.numberOfImages,
+      );
       const total = acc + images;
       return total;
     }, 0);

@@ -24,12 +24,15 @@ class Pixelate extends React.PureComponent<{}> {
     const { crop } = imageItem.image;
 
     // const width = crop  && crop.width ? Math.floor(img.width * crop.width / 100) : img.width;
-    const height = crop  && crop.height ? Math.floor(img.height * crop.height / 100) : img.height;
-    const offX = crop && crop.x ? Math.floor(img.width * crop.x / 100) : 0;
-    const offY = crop && crop.y ? Math.floor(img.height * crop.y / 100) : 0;
+    const height = crop && crop.height ? Math.floor((img.height * crop.height) / 100) : img.height;
+    const offX = crop && crop.x ? Math.floor((img.width * crop.x) / 100) : 0;
+    const offY = crop && crop.y ? Math.floor((img.height * crop.y) / 100) : 0;
     const numberOfPixelsX = imageItem.minNumberOfPixelsX;
     const numberOfPixelsY = imageItem.minNumberOfPixelsY;
-    const numberOfImages = Math.log(height / numberOfPixelsY) / Math.log(2);
+    const numberOfImages = Math.min(
+      Math.log(height / numberOfPixelsY) / Math.log(2),
+      imageItem.numberOfImages,
+    );
     const aspectRatio = numberOfPixelsX / numberOfPixelsY;
     const newWidth = Math.floor(aspectRatio * height);
     canvas.width = newWidth;
