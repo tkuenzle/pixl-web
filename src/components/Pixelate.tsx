@@ -6,7 +6,7 @@ import { ImageItemValues } from './ImageItem';
 
 function toBlob(canvas: HTMLCanvasElement): Promise<Blob | null> {
   return new Promise((resolve, reject) => {
-    canvas.toBlob(result => resolve(result));
+    canvas.toBlob(result => resolve(result), 'image/jpeg', 0.8);
   });
 }
 
