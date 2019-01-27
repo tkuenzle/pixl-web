@@ -1,6 +1,5 @@
-import { createStyles, IconButton, Typography } from '@material-ui/core';
+import { createStyles, Typography } from '@material-ui/core';
 import withStyles, { WithStyles } from '@material-ui/core/styles/withStyles';
-import CropIcon from '@material-ui/icons/Crop';
 import * as React from 'react';
 import Dropzone, { FileWithPreview } from 'react-dropzone';
 import { FieldRenderProps } from 'react-final-form';
@@ -43,20 +42,6 @@ const styles = (theme: MyTheme) =>
     controls: {
       display: 'flex',
     },
-    crop: {
-      position: 'absolute',
-      right: theme.spacing.unit,
-      top: theme.spacing.unit,
-    },
-    overlay: {
-      alignItems: 'center',
-      backgroundColor: 'rgba(0,0,0,0.4)',
-      color: theme.palette.common.white,
-      display: 'none',
-      height: '100%',
-      justifyContent: 'center',
-      width: '100%',
-    },
     reject: {
       borderColor: theme.palette.error.main,
     },
@@ -67,15 +52,7 @@ interface ImageFieldProps extends WithStyles<typeof styles>, FieldRenderProps {
   pixelY: number;
 }
 
-interface ImageFieldState {
-  cropping: boolean;
-}
-
-class ImageSelect extends React.PureComponent<ImageFieldProps, ImageFieldState> {
-  public state = {
-    cropping: false,
-  };
-
+class ImageSelect extends React.PureComponent<ImageFieldProps> {
   public onDrop = async (acceptedFiles: FileWithPreview[], rejectedFiles: FileWithPreview[]) => {
     const { onChange, value } = this.props.input;
     const [file] = acceptedFiles;
@@ -94,26 +71,6 @@ class ImageSelect extends React.PureComponent<ImageFieldProps, ImageFieldState> 
     const label = touched && error ? error : 'Click here or drop an image.';
     const color = touched && error ? 'error' : 'default';
     return !preview ? <Typography {...{ color }}>{label}</Typography> : null;
-  }
-
-  public renderOverlay() {
-    const { value } = this.props.input;
-    const { src: preview } = value && value.file;
-    const { classes, pixelX, pixelY } = this.props;
-    const label = 'Click here to chose another image.';
-    return preview ? (
-      <div id="overlay" className={classes.overlay}>
-        <IconButton
-          disabled={!(pixelX / pixelY) || !isFinite(pixelX / pixelY)}
-          color="inherit"
-          className={classes.crop}
-          onClick={this.startCrop}
-        >
-          <CropIcon />
-        </IconButton>
-        <Typography color="inherit">{label}</Typography>
-      </div>
-    ) : null;
   }
 
   public renderDropzone() {
@@ -137,20 +94,14 @@ class ImageSelect extends React.PureComponent<ImageFieldProps, ImageFieldState> 
         style={{ backgroundImage: `url(${file && file.src})`, ...getImagePosition(file, crop) }}
       >
         {this.renderText()}
-        {this.renderOverlay()}
       </Dropzone>
     );
   }
 
   public handleCropChange = (crop: Crop) => {
     const { onChange, value } = this.props.input;
-    //tslint:disable
-    console.log({ crop });
     onChange({ ...value, crop });
-    this.setState({ cropping: false });
-  };
-
-  public handleCropCancel = () => this.setState({ cropping: false });
+  }
 
   public renderCrop() {
     const { value } = this.props.input;
@@ -161,24 +112,18 @@ class ImageSelect extends React.PureComponent<ImageFieldProps, ImageFieldState> 
         image={file.src}
         crop={value.crop}
         onChange={this.handleCropChange}
-        onCancel={this.handleCropCancel}
         aspect={pixelX / pixelY}
       />
     );
   }
 
   public render() {
-    const { cropping } = this.state;
-    if (cropping) {
+    const { file } = this.props.input.value;
+    if (file != null) {
       return this.renderCrop();
     }
     return this.renderDropzone();
   }
-
-  private startCrop = (e: any) => {
-    e.stopPropagation();
-    this.setState({ cropping: true });
-  };
 }
 
 export default withStyles(styles)(ImageSelect);

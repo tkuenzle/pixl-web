@@ -1,7 +1,5 @@
-import { createStyles, IconButton } from '@material-ui/core';
+import { createStyles } from '@material-ui/core';
 import withStyles, { WithStyles } from '@material-ui/core/styles/withStyles';
-import ClearIcon from '@material-ui/icons/Clear';
-import DoneIcon from '@material-ui/icons/Done';
 import * as React from 'react';
 import ReactCrop, { Crop, PixelCrop } from 'react-image-crop';
 import 'react-image-crop/dist/ReactCrop.css';
@@ -58,41 +56,32 @@ interface ImageEditorProps extends WithStyles<typeof styles> {
   crop: Crop;
   aspect: number | undefined;
   onChange: (crop: Crop) => void;
-  onCancel: () => void;
 }
 
 interface ImageEditorState {
-  crop: Crop;
   constrainDimension: string;
 }
 
 class ImageEditor extends React.PureComponent<ImageEditorProps, ImageEditorState> {
+  public static defaultProps = {
+    crop: defaultCrop,
+  };
 
-  public static getDerivedStateFromProps(props: ImageEditorProps, state: ImageEditorState) {
-    const { aspect } = props;
-    if (aspect && state.crop.aspect && aspect !== state.crop.aspect) {
-    // tslint:disable
-    console.log({ aspect });
-      return { crop: {...state.crop, aspect, width: undefined} };
-    }
-    return null;
-  }
   public state = {
     constrainDimension: 'height',
-    crop: this.props.crop || defaultCrop,
-    height: undefined,
-    width: undefined,
   };
 
   public viewRef: React.RefObject<HTMLDivElement> = React.createRef();
 
-  public handleCropChange = (crop: Crop, pixelCrop: PixelCrop) => {
-    this.setState({ crop });
+  public componentDidUpdate(prevProps: ImageEditorProps) {
+    const { aspect, onChange, crop } = this.props;
+    if (aspect && prevProps.aspect !== aspect) {
+      onChange({ ...crop, aspect, width: undefined });
+    }
   }
 
-  public submitCrop = () => {
+  public handleCropChange = (crop: Crop, pixelCrop: PixelCrop) => {
     const { onChange } = this.props;
-    const { crop } = this.state;
     onChange(crop);
   }
 
@@ -107,8 +96,8 @@ class ImageEditor extends React.PureComponent<ImageEditorProps, ImageEditorState
   }
 
   public render() {
-    const { classes, aspect, image, onCancel } = this.props;
-    const { crop, constrainDimension } = this.state;
+    const { classes, aspect, image, crop } = this.props;
+    const { constrainDimension } = this.state;
     return (
       <div className={classes.base}>
         <div className={classes.image}>
@@ -121,16 +110,6 @@ class ImageEditor extends React.PureComponent<ImageEditorProps, ImageEditorState
               onImageLoaded={this.setConstraintDimension}
               crop={{ ...crop, aspect }}
             />
-          </div>
-        </div>
-        <div className={classes.controls}>
-          <div className={classes.buttons}>
-            <IconButton onClick={onCancel}>
-              <ClearIcon />
-            </IconButton>
-            <IconButton onClick={this.submitCrop}>
-              <DoneIcon color="primary" />
-            </IconButton>
           </div>
         </div>
       </div>
